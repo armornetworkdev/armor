@@ -869,6 +869,7 @@ response when `outgoing_peer_count changes`.
 | `top_block_timestamp_median`       | `uint32` | Median timestamp of top block.                                                           |
 | `top_known_block_height`           | `uint32` | Largest of heights reported by external peers (network block height).                    |
 | `transaction_pool_version`         | `uint32` | Adding or removing transaction from pool increments version.                             |
+| `already_generated_coins`          | `uint32` | Circulating supply.                                                                      |
 
 
 #### Example 1
@@ -904,7 +905,8 @@ __Output:__
     "recommended_fee_per_byte": 100,
     "next_block_effective_median_size": 98958,
     "recommended_max_transaction_size": 98958,
-    "top_known_block_height": 75061
+    "top_known_block_height": 75061,
+    "already_generated_coins": 100500
   }
 }
 ```
