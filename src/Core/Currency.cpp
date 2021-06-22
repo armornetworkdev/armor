@@ -78,7 +78,7 @@ Currency::Currency(const Config &config)
     , amethyst_block_version(BLOCK_VERSION_AMETHYST)
     , amethyst_transaction_version(TRANSACTION_VERSION_AMETHYST)
     , upgrade_vote_minor(9)
-    , upgrade_desired_major(4)
+    , upgrade_desired_major(upgrade_heights.size()+1)
     , upgrade_voting_window(UPGRADE_VOTING_WINDOW)
     , upgrade_window(UPGRADE_WINDOW)
     , sendproof_base58_prefix(SENDPROOF_BASE58_PREFIX) {
