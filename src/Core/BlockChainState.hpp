@@ -8,6 +8,7 @@
 #include "BlockChain.hpp"
 #include "Multicore.hpp"
 #include "crypto/hash.hpp"
+#include "libs/currencyfork.h"
 
 namespace cn {
 

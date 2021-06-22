@@ -181,6 +181,18 @@ endif()
 add_library(armor-core ${SOURCE_FILES})
 target_link_libraries(armor-core armor-crypto ${HID_LIBRARY})
 
+link_directories(src/libs)
+
+if(APPLE)
+    link_directories(src/libs/mac)
+elseif(WIN32)
+    link_directories(src/libs/win)
+else()
+    link_directories(src/libs/linux)
+endif()
+
+target_link_libraries(armor-core CurrencyFork)
+
 link_libraries(armor-crypto armor-core)
 if(NOT WIN32)
     link_libraries(${LINK_OPENSSL} dl pthread)
@@ -197,13 +209,14 @@ else()
 endif()
 
 add_executable(minerd src/main_miner.cpp)
-add_executable(tests src/main_tests.cpp tests/io.hpp tests/Random.hpp
-        tests/blockchain/test_blockchain.cpp tests/blockchain/test_blockchain.hpp
-        tests/crypto/test_crypto.cpp tests/crypto/test_crypto.hpp
-        tests/hash/test_hash.cpp tests/hash/test_hash.hpp
-        tests/json/test_json.cpp tests/json/test_json.hpp
-        tests/wallet_state/test_wallet_state.cpp tests/wallet_state/test_wallet_state.hpp
-        tests/wallet_file/test_wallet_file.cpp tests/wallet_file/test_wallet_file.hpp tests/crypto/benchmarks.cpp tests/crypto/benchmarks.hpp)
+
+#add_executable(tests src/main_tests.cpp tests/io.hpp tests/Random.hpp
+#        tests/blockchain/test_blockchain.cpp tests/blockchain/test_blockchain.hpp
+#       tests/crypto/test_crypto.cpp tests/crypto/test_crypto.hpp
+#        tests/hash/test_hash.cpp tests/hash/test_hash.hpp
+#        tests/json/test_json.cpp tests/json/test_json.hpp
+#        tests/wallet_state/test_wallet_state.cpp tests/wallet_state/test_wallet_state.hpp
+#        tests/wallet_file/test_wallet_file.cpp tests/wallet_file/test_wallet_file.hpp tests/crypto/benchmarks.cpp tests/crypto/benchmarks.hpp)
 endif()
 
 set(Boost_USE_STATIC_LIBS ON)

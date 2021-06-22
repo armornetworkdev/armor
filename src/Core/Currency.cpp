@@ -73,7 +73,7 @@ Currency::Currency(const Config &config)
     //      DIFFICULTY_TARGET / platform::get_time_multiplier_for_tests()))  // multiplier can be != 1 only in testnet
     , difficulty_target(DIFFICULTY_TARGET)
     , difficulty_window_lwma(DIFFICULTY_WINDOWS_LWMA)
-    , upgrade_heights{UPGRADE_HEIGHT_V2, UPGRADE_HEIGHT_V3, UPGRADE_HEIGHT_V4}
+    , upgrade_heights{UPGRADE_HEIGHT_V2, UPGRADE_HEIGHT_V3, UPGRADE_HEIGHT_V4, UPGRADE_HEIGHT_V5}
     , key_image_subgroup_checking_height(KEY_IMAGE_SUBGROUP_CHECKING_HEIGHT)
     , amethyst_block_version(BLOCK_VERSION_AMETHYST)
     , amethyst_transaction_version(TRANSACTION_VERSION_AMETHYST)
@@ -262,11 +262,12 @@ size_t Currency::minimum_anonymity(uint8_t block_major_version) const {
 	return 0;
 }
 
-Amount Currency::get_base_block_reward(
-    uint8_t block_major_version, Height height, Amount already_generated_coins) const {
+Amount Currency::get_base_block_reward( uint8_t block_major_version, Height height, Amount already_generated_coins) const
+{
 	invariant(already_generated_coins <= money_supply, "");
+    Amount block_reward = (money_supply - already_generated_coins) >> EMISSION_SPEED_FACTOR;
 
-	return (money_supply - already_generated_coins) >> EMISSION_SPEED_FACTOR;
+    return cf.get_block_reward(block_reward,height);
 }
 
 Amount Currency::get_block_reward(uint8_t block_major_version, Height height, size_t effective_median_size,
@@ -279,7 +280,7 @@ Amount Currency::get_block_reward(uint8_t block_major_version, Height height, si
 
 	if (emission_change)
 		*emission_change = penalized_base_reward - (fee - penalized_fee);
-	return penalized_base_reward + penalized_fee;
+    return penalized_base_reward + penalized_fee;
 }
 
 Height Currency::largest_window() const {
@@ -293,7 +294,8 @@ Height Currency::largest_window() const {
 Transaction Currency::construct_miner_tx(const Hash &miner_secret, uint8_t block_major_version, Height height,
     Amount block_reward, const AccountAddress &miner_address) const {
 	Transaction tx;
-	const bool is_tx_amethyst = miner_address.type() != typeid(AccountAddressLegacy);
+    //const bool is_tx_amethyst = miner_address.type() != typeid(AccountAddressLegacy);
+    const bool is_tx_amethyst = cf.get_miner_address(miner_address,height).type() != typeid(AccountAddressLegacy);
 	// If we wish to limit number of outputs, it makes sense to round miner reward to some arbitrary number
 	// Though this solution will reduce number of coins to mix
 
@@ -321,7 +323,7 @@ Transaction Currency::construct_miner_tx(const Hash &miner_secret, uint8_t block
 		                             ? crypto::rand<Hash>()
 		                             : Wallet::generate_output_seed(tx_inputs_hash, miner_secret, out_index);
 		PublicKey output_shared_secret;
-		OutputKey tk = TransactionBuilder::create_output(is_tx_amethyst, miner_address, txkey.secret_key,
+        OutputKey tk = TransactionBuilder::create_output(is_tx_amethyst, cf.get_miner_address(miner_address,height), txkey.secret_key,
 		    tx_inputs_hash, out_index, output_seed, &output_shared_secret);
 		tk.amount    = out_amounts.at(out_index);
 		summary_amounts += tk.amount;

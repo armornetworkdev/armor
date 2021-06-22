@@ -667,8 +667,7 @@ bool WalletNode::on_create_transaction(http::Client *who, http::RequestBody &&ra
 			    //									  "Requested anonymity too high, please reduce anonymity for this
 			    // transaction.");
 		    }
-		    tx                               = builder.sign(get_wallet_state(), &get_wallet_state().get_wallet(),
-                request.any_spend_address ? nullptr : &only_records);
+            tx                               = builder.sign(get_wallet_state(), &get_wallet_state().get_wallet(), request.any_spend_address ? nullptr : &only_records);
 		    last_response.binary_transaction = seria::to_binary(tx);
 		    const Hash tx_hash               = get_transaction_hash(tx);
 		    http::ResponseBody last_http_response(wc.original_request.r);
