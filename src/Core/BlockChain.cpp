@@ -1179,9 +1179,9 @@ void BlockChain::build_blods() {
 	api::BlockHeader last_hard_checkpoint_header;
 	if (!get_header(m_currency.last_hard_checkpoint().hash, &last_hard_checkpoint_header))
 		return;
-	invariant(last_hard_checkpoint_header.hash == m_currency.genesis_block_hash ||
-	              last_hard_checkpoint_header.major_version == 1 + m_currency.upgrade_heights.size(),
-	    "When adding checkpoint after consensus update, always update currency.upgrade_heights");
+    invariant(last_hard_checkpoint_header.hash == m_currency.genesis_block_hash ||
+              last_hard_checkpoint_header.major_version <= m_currency.upgrade_heights.size(),
+              "When adding checkpoint after consensus update, always update currency.upgrade_heights");
 
 	std::set<Hash> bad_header_hashes;   // sidechains that do not pass through last hard checkpoint
 	std::set<Hash> good_header_hashes;  // sidechains that pass through last hard checkpoint
