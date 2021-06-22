@@ -153,8 +153,8 @@ std::string TransactionBuilder::decrypt_message_chunk(const BinaryArray &encrypt
 	return common::as_string(dec);
 }
 
-Transaction TransactionBuilder::sign(
-    const WalletStateBasic &wallet_state, Wallet *wallet, const std::set<AccountAddress> *only_records) {
+Transaction TransactionBuilder::sign( const WalletStateBasic &wallet_state, Wallet *wallet, const std::set<AccountAddress> *only_records)
+{
 	std::shuffle(m_output_descs.begin(), m_output_descs.end(), crypto::random_engine<size_t>{});
 	std::shuffle(m_input_descs.begin(), m_input_descs.end(), crypto::random_engine<size_t>{});
 	std::shuffle(m_message_descs.begin(), m_message_descs.end(), crypto::random_engine<size_t>{});

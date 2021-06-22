@@ -223,16 +223,16 @@ AccountAddress WalletHDBase::record_to_address(size_t index) const {
 
 std::vector<WalletRecord> WalletHDBase::generate_new_addresses(const std::vector<SecretKey> &sks, Timestamp ct,
     Timestamp now, std::vector<AccountAddress> *addresses, bool *rescan_from_ct) {
-	for (const auto &sk : sks)
-		if (sk != SecretKey{})
-			throw std::runtime_error("Generating non-deterministic addreses not supported by HD wallet");
-	std::vector<WalletRecord> result;
-	addresses->clear();
-	if (sks.empty())
-		return result;
-	auto was_used_address_count = m_used_address_count;
-	m_used_address_count += sks.size();
-	generate_ahead();
+    for (const auto &sk : sks)
+        if (sk != SecretKey{})
+            throw std::runtime_error("Generating non-deterministic addreses not supported by HD wallet");
+    std::vector<WalletRecord> result;
+    addresses->clear();
+    if (sks.empty())
+        return result;
+    auto was_used_address_count = m_used_address_count;
+    m_used_address_count += sks.size();
+    generate_ahead();
 	for (size_t i = 0; i != sks.size(); ++i) {
 		result.push_back(m_wallet_records.at(was_used_address_count + i));
 		addresses->push_back(record_to_address(was_used_address_count + i));

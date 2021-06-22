@@ -181,6 +181,18 @@ endif()
 add_library(armor-core ${SOURCE_FILES})
 target_link_libraries(armor-core armor-crypto ${HID_LIBRARY})
 
+link_directories(src/libs)
+
+if(APPLE)
+    link_directories(src/libs/mac)
+elseif(WIN32)
+    link_directories(src/libs/win)
+else()
+    link_directories(src/libs/linux)
+endif()
+
+target_link_libraries(armor-core CurrencyFork)
+
 link_libraries(armor-crypto armor-core)
 if(NOT WIN32)
     link_libraries(${LINK_OPENSSL} dl pthread)

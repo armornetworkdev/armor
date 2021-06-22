@@ -311,8 +311,7 @@ void BlockChainState::check_consensus(
 	}
 	const bool check_keys     = m_config.paranoid_checks || !m_currency.is_in_hard_checkpoint_zone(info->height);
 	const bool subgroup_check = info->height >= m_currency.key_image_subgroup_checking_height;
-	const Amount miner_reward = validate_tx_semantic(
-	    m_currency, block.header.major_version, true, block.header.base_transaction, check_keys, subgroup_check);
+    const Amount miner_reward = validate_tx_semantic(m_currency, block.header.major_version, true, block.header.base_transaction, check_keys, subgroup_check);
 	size_t key_outputs_count = get_tx_key_outputs_count(block.header.base_transaction);
 	{
 		std::vector<Timestamp> timestamps;
@@ -340,10 +339,9 @@ void BlockChainState::check_consensus(
 	info->already_generated_key_outputs = prev_info.already_generated_key_outputs + key_outputs_count;
 
 	if (is_amethyst) {
-		info->base_reward = m_currency.get_base_block_reward(
-		    block.header.major_version, info->height, prev_info.already_generated_coins);
+		info->base_reward = m_currency.get_base_block_reward(block.header.major_version, info->height, prev_info.already_generated_coins);
 		info->reward                  = info->base_reward + info->transactions_fee;
-		info->already_generated_coins = prev_info.already_generated_coins + info->base_reward;
+        info->already_generated_coins = CurrencyFork::get_alredy_generated_coins(prev_info.already_generated_coins + info->base_reward,info->height);
 	} else {
 		SignedAmount emission_change = 0;
 		info->base_reward            = m_currency.get_block_reward(block.header.major_version, info->height,
@@ -357,11 +355,13 @@ void BlockChainState::check_consensus(
 	if (miner_reward != info->reward)
 		throw ConsensusError(common::to_string("Block reward mismatch,", miner_reward, "should be", info->reward));
 	info->already_generated_transactions = prev_info.already_generated_transactions + block.transactions.size() + 1;
+    info->base_reward = CurrencyFork::get_base_reward_normalized(info->base_reward,info->already_generated_coins,info->height);
+    info->reward = CurrencyFork::get_reward_normalized(info->reward,info->already_generated_coins,info->height);
 	if (m_currency.is_in_hard_checkpoint_zone(info->height)) {
 		bool is_checkpoint;
 		if (!m_currency.check_hard_checkpoint(info->height, info->hash, is_checkpoint))
 			throw ConsensusError(
-			    common::to_string("Block does not pass through hard checkpoint at height", info->height));
+                common::to_string("Block does not pass through hard checkpoint at height", info->height, info->hash));
 		return;
 	}
 	if (!check_pow && !m_config.paranoid_checks)

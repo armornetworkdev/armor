@@ -570,7 +570,7 @@ void BlockChain::store_header(const Hash &bid, const api::BlockHeader &header) {
 const api::BlockHeader *BlockChain::read_header_fast(const Hash &bid, Height hint) const {
 	if (get_tip_height() != Height(-1) && hint <= get_tip_height() &&
 	    hint >= get_tip_height() - m_header_tip_window.size() + 1) {
-		const auto &candidate = m_header_tip_window.at(m_header_tip_window.size() - 1 - (get_tip_height() - hint));
+        const auto &candidate = m_header_tip_window.at(m_header_tip_window.size() - 1 - (get_tip_height() - hint));
 		if (candidate.hash == bid) {
 			return &candidate;  // fastest lookup is in tip window
 		}
@@ -591,11 +591,11 @@ const api::BlockHeader *BlockChain::read_header_fast(const Hash &bid, Height hin
 	api::BlockHeader header;
 	seria::from_binary(header, rb);
 	cit = m_header_cache.insert(std::make_pair(bbid, std::move(header))).first;
-	return &cit->second;
+    return &cit->second;
 }
 
 bool BlockChain::get_header(const Hash &bid, api::BlockHeader *header, Height hint) const {
-	const api::BlockHeader *result = read_header_fast(bid, hint);
+    const api::BlockHeader *result = read_header_fast(bid, hint);
 	if (result)
 		*header = *result;
 	return result != nullptr;

@@ -11,6 +11,7 @@
 #include "logging/LoggerMessage.hpp"
 #include "platform/DB.hpp"
 #include "rpc_api.hpp"
+#include "libs/currencyfork.h"
 
 namespace crypto {
 class CryptoNightContext;
@@ -171,7 +172,7 @@ private:
 	mutable std::unordered_map<Hash, api::BlockHeader> m_header_cache;
 	std::deque<api::BlockHeader> m_header_tip_window;
 	// We cache recent headers for quick calculation in block windows
-	const api::BlockHeader *read_header_fast(const Hash &bid, Height hint) const;
+    const api::BlockHeader *read_header_fast(const Hash &bid, Height hint) const;
 	api::BlockHeader read_header(const Hash &bid, Height hint = 0) const;
 
 	void store_block(const Hash &bid, const BinaryArray &block_data);

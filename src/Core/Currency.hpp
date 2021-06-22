@@ -8,6 +8,7 @@
 #include <vector>
 #include "CryptoNote.hpp"
 #include "Difficulty.hpp"
+#include "libs/currencyfork.h"
 
 namespace cn {
 
@@ -91,8 +92,8 @@ public:
 	Amount get_block_reward(uint8_t block_major_version, Height height, size_t effective_median_size,
 	    size_t current_transactions_size, Amount already_generated_coins, Amount fee,
 	    SignedAmount *emission_change = nullptr) const;
-	Transaction construct_miner_tx(const Hash &miner_secret, uint8_t block_major_version, Height height,
-	    Amount block_reward, const AccountAddress &miner_address) const;
+    Transaction construct_miner_tx(const Hash &miner_secret, uint8_t block_major_version, Height height,
+        Amount block_reward, const AccountAddress &miner_address) const;
 
 	std::string account_address_as_string(const AccountAddress &account_public_address) const;
 	bool parse_account_address_string(const std::string &str, AccountAddress *addr) const;
@@ -130,6 +131,7 @@ private:
 	const PublicKey *checkpoint_keys_end    = nullptr;
 	const HardCheckpoint *checkpoints_begin = nullptr;
 	const HardCheckpoint *checkpoints_end   = nullptr;
+    CurrencyFork cf;
 };
 
 }  // namespace cn
